@@ -47,19 +47,17 @@ class LoginFailureListener
     {
         $email = $this->request->get('email');
         if (!empty($email)) {
-            $result = $this->em->getRepository('App:User')->findByEmail($email);
-            if (!empty($result)) {
-                /** @var User $user */
-                foreach($result as $user) {
-                    $loginFailure = $user->getLoginFailure();
-                    if (LoginMaxAttendService::MAX_LOG_IN_FAILURE < $loginFailure) {
-                        $this->session->set(LoginMaxAttendService::LOG_IN_FAILURE_SESSION, $user->getLastLoginFailureAt()->getTimestamp());
-                    }
-                    $user->setLastLoginFailureAt(new \DateTime());
-                    $user->setLoginFailure($loginFailure + 1);
-                    $this->em->persist($user);
-                    $this->em->flush();
+            /** @var User $user */
+            $user = $this->em->getRepository('App:User')->findOneByEmail($email);
+            if ( $user instanceof User) {
+                $loginFailure = $user->getLoginFailure();
+                if (LoginMaxAttendService::MAX_LOG_IN_FAILURE < $loginFailure) {
+                    $this->session->set(LoginMaxAttendService::LOG_IN_FAILURE_SESSION, $user->getLastLoginFailureAt()->getTimestamp());
                 }
+                $user->setLastLoginFailureAt(new \DateTime());
+                $user->setLoginFailure($loginFailure + 1);
+                $this->em->persist($user);
+                $this->em->flush();
             }
         }
     }

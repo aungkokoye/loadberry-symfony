@@ -3,7 +3,8 @@
 namespace App\Form;
 
 use App\Entity\FileUpload;
-use Captcha\Bundle\CaptchaBundle\Form\Type\CaptchaType;
+use App\Service\UtilityService;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -13,14 +14,31 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class FileUploadType extends AbstractType
 {
+    /**
+     * @var UtilityService
+     */
+    private $utility;
+
+    public function __construct(UtilityService $utility)
+    {
+        $this->utility = $utility;
+    }
+
+    /**
+     * @param FormBuilderInterface $builder
+     * @param array                $options
+     * @throws InvalidArgumentException
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $maxFileUploadSize = $this->utility->getMaxFileUploadSize();
         $builder
             ->add('description')
             ->add('file', FileType::class, [
                 'label' => 'File Upload ( required )',
 
-                'help'  => 'Max File size 20M. Allowed file formats (all images, all videos, PDF, Word, Excel, MS office, text)',
+                'help'  => 'Max File size '. strtoupper($maxFileUploadSize) .
+                    '. Allowed file formats (all images, all videos, PDF, Word, Excel, MS office, text)',
 
                 // unmapped means that this field is not associated to any entity property
                 'mapped' => false,
@@ -33,7 +51,7 @@ class FileUploadType extends AbstractType
                 // in the associated entity, so you can use the PHP constraint classes
                 'constraints' => [
                     new File([
-                                 'maxSize' => '20m',  // max 20 MB
+                                 'maxSize' => $maxFileUploadSize,
                                  'mimeTypes' => [
                                      'image/*',
                                      'video/*',

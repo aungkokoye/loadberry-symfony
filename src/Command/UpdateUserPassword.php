@@ -2,11 +2,12 @@
 
 namespace App\Command;
 
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 
@@ -22,7 +23,7 @@ class UpdateUserPassword extends Command
     /**
      * @var UserPasswordEncoderInterface
      */
-    private  $encoder;
+    private $encoder;
 
     public function __construct(EntityManagerInterface $entityManager, UserPasswordEncoderInterface $encoder)
     {
@@ -30,7 +31,7 @@ class UpdateUserPassword extends Command
         // then set your own properties. That wouldn't work in this case
         // because configure() needs the properties set in this constructor
         $this->entityManager = $entityManager;
-        $this->encoder = $encoder;
+        $this->encoder       = $encoder;
 
         parent::__construct();
 
@@ -44,12 +45,9 @@ class UpdateUserPassword extends Command
 
             // the full command description shown when running the command with
             // the "--help" option
-            ->setHelp('This command allows you to change a user\'s password.')
-
+            ->setHelp('This command allows you to change a user\'s password. param1 : email, param2 : password')
             ->addArgument('email', InputArgument::REQUIRED, 'The email of the user.')
-
-            ->addArgument('password', InputArgument::REQUIRED, 'The password of the user.')
-        ;
+            ->addArgument('password', InputArgument::REQUIRED, 'The password of the user.');
     }
 
 
@@ -58,14 +56,14 @@ class UpdateUserPassword extends Command
      * @param OutputInterface $output
      * @return int
      */
-    protected function execute(InputInterface $input, OutputInterface $output) : int
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $email = $input->getArgument('email');
+        $email    = $input->getArgument('email');
         $password = $input->getArgument('password');
 
-        $result = $this->entityManager->getRepository('App:User')->findByEmail($email);
+        $user = $this->entityManager->getRepository('App:User')->findOneByEmail($email);
 
-        if(empty($result)) {
+        if (!$user instanceof User) {
             $output->writeln([
                                  'Email does not exist.',
                                  'Email: ' . $email,
@@ -73,12 +71,10 @@ class UpdateUserPassword extends Command
             return 0;
         }
 
-        foreach($result as $user) {
-            $encoded = $this->encoder->encodePassword($user, $password);
-            $user->setPassword($encoded);
-            $this->entityManager->persist($user);
-            $this->entityManager->flush();
-        }
+        $encoded = $this->encoder->encodePassword($user, $password);
+        $user->setPassword($encoded);
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
 
         $output->writeln([
                              'Successfully change user\'s password!',
