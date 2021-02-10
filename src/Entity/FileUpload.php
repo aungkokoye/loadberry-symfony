@@ -79,7 +79,8 @@ class FileUpload
 
     public function getSizeInMB() : string
     {
-        return number_format($this->getSize()/1024 , 2, '.', ''). ' MB';
+        $fileSize = (int) $this->getSize()/1048576;
+        return number_format($fileSize , 4, '.', ''). ' MB';
     }
 
     public function setSize(int $size): self
