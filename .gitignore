@@ -21,6 +21,7 @@ files/
 
 ###< other ###
 composer.lock
+.env
 .env.test
 phpunit.xml.dist
 ###< other ###

@@ -18,8 +18,9 @@ class FileUploadType extends AbstractType
         $builder
             ->add('description')
             ->add('file', FileType::class, [
-	        'label' => 'File Upload ( required )',
-		'help'  => 'Max file size 20MB. Allowed file formats (all image, all video, PDF, Word, Excel, MS office, text)',
+                'label' => 'File Upload ( required )',
+
+                'help'  => 'Max File size 20M. Allowed file formats (all images, all videos, PDF, Word, Excel, MS office, text)',
 
                 // unmapped means that this field is not associated to any entity property
                 'mapped' => false,
@@ -32,10 +33,10 @@ class FileUploadType extends AbstractType
                 // in the associated entity, so you can use the PHP constraint classes
                 'constraints' => [
                     new File([
-                                 'maxSize' => '20m',  // max 10 MB
+                                 'maxSize' => '20m',  // max 20 MB
                                  'mimeTypes' => [
-				     'image/*',
-				     'video/*',
+                                     'image/*',
+                                     'video/*',
                                      'application/pdf',
                                      'application/x-pdf',
                                      'application/msword',
