@@ -20,7 +20,7 @@ class FileUploadType extends AbstractType
             ->add('file', FileType::class, [
                 'label' => 'File Upload ( required )',
 
-                'help'  => 'Max File size 20M. Allowed file formats (all image, all video, PDF, Word, Excel, MS office, text)',
+                'help'  => 'Max File size 20M. Allowed file formats (all images, all videos, PDF, Word, Excel, MS office, text)',
 
                 // unmapped means that this field is not associated to any entity property
                 'mapped' => false,
