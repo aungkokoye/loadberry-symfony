@@ -5,6 +5,8 @@
 {% block body %}
     <div class="container">
 
+        <h2> Uploading New Form</h2>
+
         <div class="card">
             <div class="card-header">
                 <p class="zawgyi">
@@ -17,8 +19,6 @@
         </div>
 
         <br>
-
-        <h1> Uploading New Form</h1>
 
         {% for message in app.flashes('success') %}
             <div class="alert alert-success">
